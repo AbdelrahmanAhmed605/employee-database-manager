@@ -1,0 +1,33 @@
+{
+  "name": "employee-database-manager",
+  "version": "1.0.0",
+  "description": "A command-line application that manages a company's employee database, using Node.js, Inquirer, and MySQL.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AbdelrahmanAhmed605/employee-database-manager.git"
+  },
+  "keywords": [
+    "MySQL",
+    "SQL",
+    "Employee",
+    "Management",
+    "Tracker",
+    "Database"
+  ],
+  "author": "Abdelrahman Ahmed",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AbdelrahmanAhmed605/employee-database-manager/issues"
+  },
+  "homepage": "https://github.com/AbdelrahmanAhmed605/employee-database-manager#readme",
+  "dependencies": {
+    "asciiart-logo": "^0.2.7",
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.4",
+    "mysql2": "^3.2.0"
+  }
+}
