@@ -103,8 +103,21 @@ class Query {
     db.query(
       `INSERT INTO employee (first_name, last_name, role_id, manager_id)
         VALUES (?, ?, (SELECT id FROM role WHERE title = ?), 
-        (SELECT id FROM (SELECT id FROM employee WHERE first_name = ? AND last_name = ?) AS temp));`,
+        (SELECT id FROM (SELECT id FROM employee WHERE first_name = ? AND last_name = ?) AS temp))`,
       [firstName, lastName, role, manager.split(" ")[0], manager.split(" ")[1]],
+      function (err, results) {
+        console.log(results);
+      }
+    );
+  }
+
+  /*inserts a high-level employee(Manager/Executive/etc.) with no direct managers into the database with the 
+  provided first name, last name, and role title.*/
+  addManager(firstName, lastName, role) {
+    db.query(
+      `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+        VALUES (?, ?, (SELECT id FROM role WHERE title = ?), null)`,
+      [firstName, lastName, role],
       function (err, results) {
         console.log(results);
       }
@@ -126,3 +139,5 @@ class Query {
     );
   }
 }
+
+module.exports = Query;
