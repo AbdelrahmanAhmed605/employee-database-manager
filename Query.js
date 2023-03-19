@@ -1,9 +1,13 @@
 const db = require("./config/connection.js");
 
-//Class provides methods that perform SQL operations based on the inquirer prompt choices selected by the user
+// This class contains methods that interact with the database based on user input from the inquirer prompts
 class Query {
-  /*retrieves a list of departments from the database and returns the result. This method is used to display 
-  department names as options in inquirer prompts.*/
+  /**
+   * Retrieves a list of departments from the database and returns the department names as an array.
+   * This method is used to display department names as options in inquirer prompts.
+   *
+   * @returns {Promise} Promise object representing the array of department names
+   */
   getDepartments() {
     return new Promise((resolve, reject) => {
       db.query("SELECT name FROM department", function (err, results) {
@@ -17,8 +21,12 @@ class Query {
     });
   }
 
-  /*retrieves a list of roles from the database and returns the result. This method is used to display job titles 
-  as options in inquirer prompts. */
+  /**
+   * Retrieves a list of roles from the database and returns the role titles as an array.
+   * This method is used to display job titles as options in inquirer prompts.
+   *
+   * @returns {Promise} Promise object representing the array of role titles
+   */
   getRoles() {
     return new Promise((resolve, reject) => {
       db.query("SELECT title FROM role", function (err, results) {
@@ -32,8 +40,13 @@ class Query {
     });
   }
 
-  /*retrieves a list of employee names (concatenated first and last names) from the database and returns the 
-  result. This method is used to display employee names as options in inquirer prompts. */
+  /**
+   * Retrieves a list of employee names (concatenated first and last names) from the database
+   * and returns the result as an array. This method is used to display employee names as options
+   * in inquirer prompts.
+   *
+   * @returns {Promise} Promise object representing the array of employee names
+   */
   getEmployees() {
     return new Promise((resolve, reject) => {
       db.query(
@@ -50,7 +63,11 @@ class Query {
     });
   }
 
-  //retrieves all departments from the database and returns the result as a resolved promise value.
+  /**
+   * Retrieves all departments from the database and returns the result as a resolved promise value.
+   *
+   * @returns {Promise} Promise object representing all departments in the database
+   */
   viewAllDepartments() {
     return new Promise((resolve, reject) => {
       db.query("SELECT * FROM department", function (err, results) {
@@ -63,8 +80,13 @@ class Query {
     });
   }
 
-  /*retrieves all roles from the database along with the corresponding department names, salary and role id, and 
-  returns the result as a resolved promise value.*/
+  /**
+   * Retrieves all roles from the database along with the corresponding department names, salary and role id,
+   * and returns the result as a resolved promise value.
+   *
+   * @returns {Promise} Promise object representing all roles in the database
+   */
+
   viewAllRoles() {
     return new Promise((resolve, reject) => {
       db.query(
@@ -83,9 +105,13 @@ class Query {
     });
   }
 
-  /*retrieves all employee details from the database including their department name, job title, salary, and manager
-    name, and returns the result as a resolved promise value. (LEFT JOIN allows data with NULL employee.manager_id 
-    to be selected)*/
+  /**
+   * Retrieves all employee details from the database including their department name, job title, salary, and manager
+   * name, and returns the result as a resolved promise value. A LEFT JOIN operation allows data with NULL employee.manager_id
+   * to be selected.
+   *
+   * @returns {Promise} Resolved promise containing the employee data, or rejected promise containing the error.
+   */
   viewAllEmployees() {
     return new Promise((resolve, reject) => {
       db.query(
@@ -111,7 +137,12 @@ class Query {
     });
   }
 
-  //inserts a new department into the database with the provided name.
+  /**
+   * Inserts a new department into the database with the provided name.
+   *
+   * @param {string} department - The name of the department to be added to the database.
+   * @returns {Promise} Resolved promise containing the department data, or rejected promise containing the error.
+   */
   addDepartment(department) {
     return new Promise((resolve, reject) => {
       db.query(
@@ -128,8 +159,15 @@ class Query {
     });
   }
 
-  /*inserts a new role into the database with the provided title, salary, and department. When inserting the role,
-  we want to insert the role's department id so we must convert the department name to it's corresponding id*/
+  /**
+   * Inserts a new role into the database with the provided title, salary, and department.
+   * The department name is converted to its corresponding ID to insert the role's department ID.
+   *
+   * @param {string} roleName - The title of the new role.
+   * @param {number} roleSalary - The salary of the new role.
+   * @param {string} roleDepartment - The name of the department the new role belongs to.
+   * @returns {Promise} Resolved promise containing the role data, or rejected promise containing the error.
+   */
   addRole(roleName, roleSalary, roleDepartment) {
     return new Promise((resolve, reject) => {
       db.query(
@@ -146,11 +184,18 @@ class Query {
     });
   }
 
-  /*inserts a new employee into the database with the provided first name, last name, role title, and manager name. 
-  The method splits the manager name into first name and last name to retrieve the corresponding manager id from 
-  the database. Temp table is created because we cannot reference the table being modified in a subquery in the 
-  FROM clause of the outer query. Additionally, the use of the temp subquery ensures that only one row is returned 
-  for the manager_id field */
+  /**
+   * Inserts a new employee into the database with the provided first name, last name, role title, and manager name.
+   * The manager name is split into first and last name to retrieve the corresponding manager ID from the database.
+   * A temporary table is created to reference the modified table in a subquery in the FROM clause of the outer query.
+   * Additionally, the use of the temp subquery ensures that only one row is returned for the manager_id field.
+   *
+   * @param {string} firstName - The first name of the new employee.
+   * @param {string} lastName - The last name of the new employee.
+   * @param {string} role - The title of the new employee's role.
+   * @param {string} manager - The name of the new employee's manager.
+   * @returns {Promise} A Promise that resolves with the query results or rejects with an error.
+   */
   addEmployee(firstName, lastName, role, manager) {
     return new Promise((resolve, reject) => {
       db.query(
@@ -175,8 +220,15 @@ class Query {
     });
   }
 
-  /*inserts a high-level employee(Manager/Executive/etc.) with no direct managers into the database with the 
-  provided first name, last name, and role title.*/
+  /**
+   * Inserts a high-level employee (Manager/Executive/etc.) with no direct managers into the database with the
+   * provided first name, last name, and role title.
+   *
+   * @param {string} firstName - The first name of the new manager.
+   * @param {string} lastName - The last name of the new manager.
+   * @param {string} role - The title of the new manager's role.
+   * @returns {Promise} A Promise that resolves with the query results or rejects with an error.
+   */
   addManager(firstName, lastName, role) {
     return new Promise((resolve, reject) => {
       db.query(
@@ -194,9 +246,16 @@ class Query {
     });
   }
 
-  /*updates the role of an existing employee in the database with the provided first name and last name to the 
-  provided new role with a new manager.The method splits the employee and manager's names into first name and 
-  last name to retrieve their corresponding employee id from the database*/
+  /**
+   * Updates the role of an existing employee in the database with the provided first name and last name to the
+   * provided new role with a new manager. The employee and manager names are split into first and last name to retrieve
+   * their corresponding IDs from the database.
+   *
+   * @param {string} employee - The name of the employee to update.
+   * @param {string} newRole - The new role of the employee.
+   * @param {string} newManager - The name of the employee's new manager.
+   * @returns {Promise} A Promise that resolves with the query results or rejects with an error.
+   */
   updateRole(employee, newRole, newManager) {
     return new Promise((resolve, reject) => {
       db.query(
@@ -222,8 +281,14 @@ class Query {
     });
   }
 
-  /*updates the role of an existing employee in the database with the provided first name and last name to the 
-  provided new managerial role*/
+  /**
+   * Updates the role of an existing employee in the database with the provided first name and last name to the
+   * provided new managerial role.
+   *
+   * @param {string} employee - The full name of the employee to update in the format "first_name last_name".
+   * @param {string} newRole - The new managerial role to assign to the employee.
+   * @returns {Promise} A Promise that resolves with the results of the database query.
+   */
   updateRoletoManager(employee, newRole) {
     return new Promise((resolve, reject) => {
       db.query(
