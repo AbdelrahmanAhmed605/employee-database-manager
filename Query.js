@@ -119,7 +119,7 @@ class Query {
       role.title, department.name AS department, role.salary, 
       CONCAT(manager.first_name, ' ', manager.last_name) AS manager 
       FROM employee 
-      LEFT LEFT JOIN role 
+      LEFT JOIN role 
       ON employee.role_id = role.id 
       LEFT JOIN department 
       ON role.department_id = department.id 
@@ -567,6 +567,29 @@ class Query {
         `DELETE FROM employee 
         WHERE (first_name = ? AND last_name = ? AND role_id = (SELECT id FROM role WHERE title = ?));`,
         [employeeName.split(" ")[0], employeeName.split(" ")[1], employeeRole],
+        function (err, results) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
+  }
+
+  /**
+   * Removes an employee with no role from the database given their name.
+   *
+   * @param {string} employeeName - the full name of the employee
+   * @returns {Promise} A Promise that resolves with the query results or rejects with an error.
+   */
+  removeEmployeeNoRole(employeeName) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `DELETE FROM employee 
+        WHERE (first_name = ? AND last_name = ? AND role_id IS null)`,
+        [employeeName.split(" ")[0], employeeName.split(" ")[1]],
         function (err, results) {
           if (err) {
             reject(err);
