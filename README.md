@@ -30,7 +30,7 @@ As the project does not use publishing softwares like Heroku and is only availab
 
 ## Usage
 
-For a walkthrough of how to use the application, refer to the following demonstration: 
+For a walkthrough of how to use the application, refer to the following demonstration: https://drive.google.com/file/d/1P930BQhPbT6PK5FmFCX0Rib6B_ukWW2U/view
 
 Once the packages are installed, to run the application, the user must type `npm start` in the terminal. This will then generate a menu prompt to the user. When the user selects the "view" options, the data will be presented as a formatted table. When the user selects the "add" or "update" options, futher prompts will appear to acquire more information from the user. When the user completes all the prompts, a message will appear confirming the completion of the user's operation to the database. After each operation is completed, the user is returned to the menu prompt to complete as many operations as needed. When the user is done using the application, they can select the "Quit" option in the menu prompt to exit the application.
 
