@@ -79,7 +79,7 @@ const addRolePrompt = [
     name: "roleSalary",
     validate: function (value) {
       //ensures the user does not enter a blank input and ensures the input contains only numbers
-      const regex = /^[0-9]+$/;
+      const regex = /^\d+(\.\d{1,5})?$/;
       if (value === "") {
         return "Field cannot be blank, please enter the role's salary";
       } else if (!regex.test(value)) {
