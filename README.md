@@ -4,12 +4,16 @@
 
 ## Description
 
-A command-line application that manages a company's employee database, using Node.js, Inquirer, and MySQL. The database contains three tables: department, role, and employee. The department table contains the department's id and names. The role table contains the role's id, title, salary, and department id it belongs to. The employee table contains the employee's first name, last name, role id they belong to, and manager id of the employee. Using the npm mysql2 package, we connect to the MySQL server to perform operations on the database. Using the inquirer package, a menu prompt is presented to the user containing a list of actions they can take related to departments, roles, and employees and waits for the user to make a selection. Based on the user's selection, CRUD operations will be made to the SQL database and the results are presented to the user. After each operation, the menu prompt reappears until the user selects the "Quit" option in the menu. During this project, Abdelrahman learnt the following skills:
+A command-line application that manages a company's employee database, using Node.js, Inquirer, and MySQL. The database contains three tables: department, role, and employee. The schema defining how the data is organized in the database is shown below. Using the npm mysql2 package, we connect to the MySQL server to perform operations on the database. Using the inquirer package, a menu prompt is presented to the user containing a list of actions they can take related to departments, roles, and employees and waits for the user to make a selection. Based on the user's selection, CRUD operations will be made to the SQL database and the results are presented to the user. After each operation, the menu prompt reappears until the user selects the "Quit" option in the menu. During this project, Abdelrahman learnt the following skills:
 - Perform MySQL CRUD operations using the npm mysql2 package
 - Using JOIN in SQL operations to combine rows from two or more tables, based on a related column between them.
 - Using LEFT JOINS in SQL operations to return all records from the left table, and the matched records from the right table (allowing me to present information that contains null data)
 - Using subqueries to retrieve data from one or more tables and then use that data to perform additional queries on another table. This allows for greater flexibility and precision when querying databases.
 - Creating promise objects to work conduct SQL CRUD operations while running inquirer prompts. This allows the prompt to wait for the completion of the SQL operations before proceeding with the prompts
+
+**Database Schema**
+
+![Schema of Database showing how data is organized](/assets/schema.png)
 
 ## Table of Contents
 
