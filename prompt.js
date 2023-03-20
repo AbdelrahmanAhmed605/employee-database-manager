@@ -3,6 +3,9 @@ const inquirer = require("inquirer");
 const Query = require("./Query.js");
 // Create new instance of Query class
 const query = new Query();
+// Print out tables in a nice format
+const table = require("console.table");
+
 
 // Prompt to be displayed on start
 const menuPrompt = [
@@ -214,15 +217,109 @@ function displayPrompts() {
     .prompt(menuPrompt)
     .then(async (userChoice) => {
       switch (userChoice.action) {
+        // Case statements for viewing all departments, roles, and employees are used to display data to the console
         case "View All Departments":
+          const departmentList = await query.viewAllDepartments();
+          console.table(departmentList);
+          break;
         case "View All Roles":
+          const roleList = await query.viewAllRoles();
+          console.table(roleList);
+          break;
         case "View All Employees":
+          const employeeList = await query.viewAllEmployees();
+          console.table(employeeList);
+          break;
+        // Case statements for adding a department, role, or employee are used to prompt the user for input and
+        // add the new data to the database
         case "Add a Department":
+          await inquirer
+            .prompt(addDepartmentPrompt)
+            .then(async (userDepartment) => {
+              await query.addDepartment(userDepartment.newDepartment);
+              console.log(
+                `\n${userDepartment.newDepartment} Department added to database\n`
+              );
+            })
+            .catch((err) => console.log(err));
+          break;
         case "Add a Role":
+          await inquirer
+            .prompt(addRolePrompt)
+            .then(async (userRole) => {
+              await query.addRole(
+                userRole.roleName,
+                userRole.roleSalary,
+                userRole.roleDepartment
+              );
+              console.log(
+                `\nNew Database Addition: ${userRole.roleName} job title added to ${userRole.roleDepartment} department with salary of ${userRole.roleSalary}\n`
+              );
+            })
+            .catch((err) => console.log(err));
+          break;
         case "Add an Employee":
+          await inquirer
+            .prompt(addEmployeePrompt)
+            .then(async (userEmployee) => {
+              // conditional statement is used to add a manager if the user selects "none" as the manager and
+              // adds an employee if otherwise
+              if (userEmployee.employeeManager === "none") {
+                await query.addManager(
+                  userEmployee.employeeFName,
+                  userEmployee.employeeLName,
+                  userEmployee.employeeRole
+                );
+                console.log(
+                  `\nNew Manager, ${userEmployee.employeeFName} ${userEmployee.employeeLName}, added to the employee database\n`
+                );
+              } else {
+                await query.addEmployee(
+                  userEmployee.employeeFName,
+                  userEmployee.employeeLName,
+                  userEmployee.employeeRole,
+                  userEmployee.employeeManager
+                );
+                console.log(
+                  `\nNew Employee, ${userEmployee.employeeFName} ${userEmployee.employeeLName}, added to the employee database\n`
+                );
+              }
+            });
+          break;
+        // Case statement for updating an employee role is used to prompt the user for input and update the database
         case "Update an Employee Role":
+          await inquirer
+            .prompt(updateEmployeePrompt)
+            .then(async (userUpdate) => {
+              // conditional statement is used to update a role to a manager role (their manager_id is set to null) if 
+              // the user selects "none" as the manager
+              if (userUpdate.updateManager === "none") {
+                await query.updateRoletoManager(
+                  userUpdate.updateEmployee,
+                  userUpdate.updateRole,
+                  userUpdate.updateManager
+                );
+                console.log(
+                  `\nDatabase Update: Employee, ${userUpdate.updateEmployee}, has been given the new job title: ${userUpdate.updateRole}. Congratulations on the promotion!\n`
+                );
+              } else {
+                await query.updateRole(
+                  userUpdate.updateEmployee,
+                  userUpdate.updateRole,
+                  userUpdate.updateManager
+                );
+                console.log(
+                  `\nDatabase Update: Employee, ${userUpdate.updateEmployee}, has been given the new job title: ${userUpdate.updateRole}\n`
+                );
+              }
+            });
+          break;
+        // Default case to exit the application which occurs when the user chooses the "Quit" option in the menu prompt
         default:
+          console.log("Ending application now...");
+          process.exit();
       }
+      // recursion to return back to the menu prompt
       displayPrompts();
     })
     .catch((err) => console.log(err));

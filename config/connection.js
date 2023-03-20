@@ -14,13 +14,4 @@ const connection = mysql.createConnection(
   console.log(`Connected to the courses_db database.`)
 );
 
-// Attempt to connect to the MySQL server
-connection.connect((err) => {
-  if (err) {
-    console.error("Error connecting to the database: ", err);
-    return;
-  }
-  console.log("Connection established successfully.");
-});
-
 module.exports = connection;
