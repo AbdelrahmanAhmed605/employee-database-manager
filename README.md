@@ -8,6 +8,7 @@ A command-line application that manages a company's employee database, using Nod
 - Perform MySQL CRUD operations using the npm mysql2 package
 - Using JOIN in SQL operations to combine rows from two or more tables, based on a related column between them.
 - Using LEFT JOINS in SQL operations to return all records from the left table, and the matched records from the right table (allowing me to present information that contains null data)
+- Using INNER JOINS in SQL operations to only return matching records (does not return data with null matches)
 - Using subqueries to retrieve data from one or more tables and then use that data to perform additional queries on another table. This allows for greater flexibility and precision when querying databases.
 - Creating promise objects to work conduct SQL CRUD operations while running inquirer prompts. This allows the prompt to wait for the completion of the SQL operations before proceeding with the prompts
 
@@ -31,6 +32,7 @@ As the project does not use publishing softwares like Heroku and is only availab
 ## Usage
 
 For a walkthrough of how to use the application, refer to the following demonstration: https://drive.google.com/file/d/1P930BQhPbT6PK5FmFCX0Rib6B_ukWW2U/view
+For a walkthrough of the bonus operations added to the application, refer to the following demonstration: https://drive.google.com/file/d/1tUP_nTflXxSKNjXRHkctlX-QwjLg5C2H/view
 
 Once the packages are installed, to run the application, the user must type `npm start` in the terminal. This will then generate a menu prompt to the user. When the user selects the "view" options, the data will be presented as a formatted table. When the user selects the "add" or "update" options, futher prompts will appear to acquire more information from the user. When the user completes all the prompts, a message will appear confirming the completion of the user's operation to the database. After each operation is completed, the user is returned to the menu prompt to complete as many operations as needed. When the user is done using the application, they can select the "Quit" option in the menu prompt to exit the application.
 
