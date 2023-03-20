@@ -296,6 +296,7 @@ const removeEmployeePrompt = [
     choices: async function () {
       try {
         const roleTitles = await query.getRoles();
+        roleTitles.unshift("none");
         return roleTitles;
       } catch (err) {
         console.error(err);
@@ -550,13 +551,20 @@ function displayPrompts() {
           const removedEmployee = await inquirer
             .prompt(removeEmployeePrompt)
             .then(async (userEmployee) => {
-              await query.removeEmployee(
-                userEmployee.employee,
-                userEmployee.role
-              );
-              console.log(
-                `\n${userEmployee.employee}: Employee removed from database\n`
-              );
+              if (userEmployee.role === "none") {
+                await query.removeEmployeeNoRole(userEmployee.employee);
+                console.log(
+                  `\n${userEmployee.employee}: Employee removed from database\n`
+                );
+              } else {
+                await query.removeEmployee(
+                  userEmployee.employee,
+                  userEmployee.role
+                );
+                console.log(
+                  `\n${userEmployee.employee}: Employee removed from database\n`
+                );
+              }
             })
             .catch((err) => console.log(err));
           break;
