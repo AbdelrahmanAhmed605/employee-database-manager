@@ -5,6 +5,22 @@ const Query = require("./Query.js");
 const query = new Query();
 // Print out tables in a nice format
 const table = require("console.table");
+// Prints out a logo in the terminal 
+const logo = require("asciiart-logo");
+
+// Prints "Employee Database Manager" as a big logo in the terminal
+console.log(
+  logo({
+    name: "Employee Database Manager",
+    font: "Doom",
+    lineChars: 10,
+    padding: 2,
+    margin: 2,
+    borderColor: "red",
+    logoColor: "bold-yellow",
+    textColor: "yellow",
+  }).render()
+);
 
 
 // Prompt to be displayed on start
