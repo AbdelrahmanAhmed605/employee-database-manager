@@ -712,7 +712,7 @@ class Query {
    * @param {string} newRole - The job title of the employee.
    * @returns {Promise} A Promise that resolves with the results of the database query.
    */
-  updateEmployeesManager(manager, managerRole, employee, employeeRole) {
+  updateEmployeesManager(employee, employeeRole, manager, managerRole) {
     return new Promise((resolve, reject) => {
       db.query(
         `Update employee 
