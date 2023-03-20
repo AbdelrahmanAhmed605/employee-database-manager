@@ -119,13 +119,110 @@ class Query {
       role.title, department.name AS department, role.salary, 
       CONCAT(manager.first_name, ' ', manager.last_name) AS manager 
       FROM employee 
-      JOIN role 
+      LEFT JOIN role 
       ON employee.role_id = role.id 
-      JOIN department 
+      LEFT JOIN department 
       ON role.department_id = department.id 
       LEFT JOIN employee AS manager 
       ON employee.manager_id = manager.id 
       ORDER BY employee.id`,
+        function (err, results) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
+  }
+
+  /**
+   * Retrieves employee details from the database for all employees under the specified manager.
+   * The employee details include their department name, job title, salary, and manager name.
+   * An INNER JOIN is used to select only rows that have matching records in both tables.
+   *
+   * @param {string} manager - The name of the manager whose employees are being retrieved.
+   * @returns {Promise} A resolved promise containing the employee data, or a rejected promise containing an error.
+   */
+  viewEmployeeByManager(manager) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `SELECT employee.id, employee.first_name, employee.last_name, 
+      role.title, department.name AS department, role.salary, 
+      CONCAT(manager.first_name, ' ', manager.last_name) AS manager 
+      FROM employee 
+      JOIN role
+      ON employee.role_id = role.id 
+      JOIN department
+      ON role.department_id = department.id 
+      INNER JOIN employee AS manager 
+      ON employee.manager_id = manager.id
+      WHERE manager.id = (SELECT id FROM (SELECT id FROM employee WHERE first_name = ? AND last_name = ?) AS temp) 
+      ORDER BY employee.id`,
+        [manager.split(" ")[0], manager.split(" ")[1]],
+        function (err, results) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
+  }
+
+  /**
+   * Retrieves employee details from the database for all employees under the specified manager.
+   * The employee details include their department name, job title, salary, and manager name.
+   * An INNER JOIN is used to select only rows that have matching records in both tables.
+   *
+   * @param {string} department - The name of the manager whose employees are being retrieved.
+   * @returns {Promise} A resolved promise containing the employee data, or a rejected promise containing an error.
+   */
+  viewEmployeeByDepartment(department) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `SELECT employee.id, employee.first_name, employee.last_name, 
+      role.title, department.name AS department, role.salary, 
+      CONCAT(manager.first_name, ' ', manager.last_name) AS manager 
+      FROM employee 
+      LEFT JOIN role
+      ON employee.role_id = role.id 
+      INNER JOIN department
+      ON role.department_id = department.id 
+      LEFT JOIN employee AS manager 
+      ON employee.manager_id = manager.id
+      WHERE department.name = ?
+      ORDER BY employee.id`,
+        department,
+        function (err, results) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
+  }
+
+  /**
+   * Retrieves the total budget of a specified department. Adds up the salaries of all the employees in the
+   * specified department
+   *
+   * @param {string} department - The name of the department to be added to the database.
+   * @returns {Promise} Resolved promise containing the department data, or rejected promise containing the error.
+   */
+  viewDepartmentBudget(department) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `SELECT SUM(role.salary) AS total_budget 
+        FROM role
+        LEFT JOIN department
+        ON role.department_id = department.id
+        WHERE department.name = ?`,
+        department,
         function (err, results) {
           if (err) {
             reject(err);
@@ -247,6 +344,75 @@ class Query {
   }
 
   /**
+   * remove a department from the database with the provided name.
+   *
+   * @param {string} department - The name of the department to be added to the database.
+   * @returns {Promise} Resolved promise containing the department data, or rejected promise containing the error.
+   */
+  removeDepartment(department) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `DELETE FROM department WHERE name = ?`,
+        department,
+        function (err, results) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
+  }
+
+  /**
+   * removes a role from the database with the provided title
+   *
+   * @param {string} roleName - The title of the role.
+   * @returns {Promise} Resolved promise containing the role data, or rejected promise containing the error.
+   */
+  removeRole(roleName) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `DELETE FROM role WHERE title = ?`,
+        roleName,
+        function (err, results) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
+  }
+
+  /**
+   * Removes an employee from the database given their name and role. The role is used to ensure we are removing
+   * the proper employee in case there are more than one employees with the same first and last name
+   *
+   * @param {string} employeeName - the full name of the employee
+   * @param {string} employeeRole - the job title of the employee
+   * @returns {Promise} A Promise that resolves with the query results or rejects with an error.
+   */
+  removeEmployee(employeeName, employeeRole) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `DELETE FROM employee 
+        WHERE (first_name = ? AND last_name = ? AND role_id = (SELECT id FROM role WHERE title = ?));`,
+        [employeeName.split(" ")[0], employeeName.split(" ")[1], employeeRole],
+        function (err, results) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
+  }
+
+  /**
    * Updates the role of an existing employee in the database with the provided first name and last name to the
    * provided new role with a new manager. The employee and manager names are split into first and last name to retrieve
    * their corresponding IDs from the database.
@@ -297,6 +463,44 @@ class Query {
        manager_id = null
        WHERE first_name = ? AND last_name = ?`,
         [newRole, employee.split(" ")[0], employee.split(" ")[1]],
+        function (err, results) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
+  }
+
+  /**
+   * Updates the manager of an existing employee in the database. The manager as well as the employee are identified
+   * using their first name, last name, and job title. The job title is used as an extra measure in case there are
+   * employees with the same first and last name.
+   *
+   *
+   * @param {string} manager - The full name of the manager in the format "first_name last_name".
+   * @param {string} managerRole - The job title of the manager.
+   * @param {string} employee - The full name of the employee to update in the format "first_name last_name".
+   * @param {string} newRole - The job title of the employee.
+   * @returns {Promise} A Promise that resolves with the results of the database query.
+   */
+  updateEmployeesManager(manager, managerRole, employee, employeeRole) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `Update employee 
+        SET manager_id = (SELECT id FROM (SELECT id FROM employee
+          WHERE first_name = ? AND last_name = ? AND role_id = (SELECT id FROM role WHERE title = ?)) AS temp)
+          WHERE (first_name = ? AND last_name = ? AND role_id = (SELECT id FROM role WHERE title = ?));`,
+        [
+          manager.split(" ")[0],
+          manager.split(" ")[1],
+          managerRole,
+          employee.split(" ")[0],
+          employee.split(" ")[1],
+          employeeRole,
+        ],
         function (err, results) {
           if (err) {
             reject(err);
