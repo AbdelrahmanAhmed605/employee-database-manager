@@ -5,7 +5,7 @@ const Query = require("./Query.js");
 const query = new Query();
 // Print out tables in a nice format
 const table = require("console.table");
-// Prints out a logo in the terminal 
+// Prints out a logo in the terminal
 const logo = require("asciiart-logo");
 
 // Prints "Employee Database Manager" as a big logo in the terminal
@@ -22,7 +22,6 @@ console.log(
   }).render()
 );
 
-
 // Prompt to be displayed on start
 const menuPrompt = [
   {
@@ -33,12 +32,78 @@ const menuPrompt = [
       "View All Departments",
       "View All Roles",
       "View All Employees",
+      "View Employees by Manager",
+      "View Employees by Department",
+      "View a Department's Budget",
       "Add a Department",
       "Add a Role",
       "Add an Employee",
+      "Remove a Department",
+      "Remove a Role",
+      "Remove an Employee",
       "Update an Employee Role",
+      "Update an Employee's Manager",
       "Quit",
     ],
+  },
+];
+
+// Prompt for viewing all the employees under a selected manager
+const viewEmployeebyManagerPrompt = [
+  {
+    type: "list",
+    message: "Please select the manager whose employees you'd like to view: ",
+    name: "manager",
+    choices: async function () {
+      try {
+        /* This callback function is used to retrieve employee names from the database and return them as choices 
+        for the user to select from. The option "none" is also added in the case that the employee does not have a
+        direct manager*/
+        const employeeNames = await query.getEmployees();
+        return employeeNames;
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+  },
+];
+
+// Prompt for viewing all the employees in a selected department
+const viewEmployeebyDepartmentPrompt = [
+  {
+    type: "list",
+    message: "Please select the department you would like to view: ",
+    name: "department",
+    choices: async function () {
+      try {
+        /* This callback function is used to retrieve department names from the database and return them as choices 
+        for the user to select from.*/
+        const depNames = await query.getDepartments();
+        return depNames;
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+  },
+];
+
+// Prompt for viewing the total budget (the combined salaries of all employees) of a selected department
+const viewDepartmentBudgetPrompt = [
+  {
+    type: "list",
+    message: "Please select the department you would like to view: ",
+    name: "department",
+    choices: async function () {
+      try {
+        const depNames = await query.getDepartments();
+        return depNames;
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
   },
 ];
 
@@ -95,8 +160,6 @@ const addRolePrompt = [
     name: "roleDepartment",
     choices: async function () {
       try {
-        /* This callback function is used to retrieve department names from the database and return them as choices 
-        for the user to select from.*/
         const depNames = await query.getDepartments();
         return depNames;
       } catch (err) {
@@ -163,12 +226,77 @@ const addEmployeePrompt = [
     name: "employeeManager",
     choices: async function () {
       try {
-        /* This callback function is used to retrieve employee names from the database and return them as choices 
-        for the user to select from. The option "none" is also added in the case that the employee does not have a
-        direct manager*/
         const employeeNames = await query.getEmployees();
         employeeNames.unshift("none");
         return employeeNames;
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+  },
+];
+
+// Prompt for removing a department
+const removeDepartmentPrompt = [
+  {
+    type: "list",
+    message: "Please select the department you would like to remove: ",
+    name: "department",
+    choices: async function () {
+      try {
+        const depNames = await query.getDepartments();
+        return depNames;
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+  },
+];
+
+// Prompt for removing a role
+const removeRolePrompt = [
+  {
+    type: "list",
+    message: "Please select the role you would like to remove: ",
+    name: "role",
+    choices: async function () {
+      try {
+        const roleTitles = await query.getRoles();
+        return roleTitles;
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+  },
+];
+
+// Prompt for removing an employee
+const removeEmployeePrompt = [
+  {
+    type: "list",
+    message: "Please select the employee you would like to remove: ",
+    name: "employee",
+    choices: async function () {
+      try {
+        const employeeNames = await query.getEmployees();
+        return employeeNames;
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+  },
+  {
+    type: "list",
+    message: "Please select the job title of your selected employee: ",
+    name: "role",
+    choices: async function () {
+      try {
+        const roleTitles = await query.getRoles();
+        return roleTitles;
       } catch (err) {
         console.error(err);
         return [];
@@ -224,6 +352,66 @@ const updateEmployeePrompt = [
   },
 ];
 
+// Prompt for updating an employees manager
+const updateEmployeesManagerPrompt = [
+  {
+    type: "list",
+    message: "Please select the employee you wish to update: ",
+    name: "employee",
+    choices: async function () {
+      try {
+        const employeeNames = await query.getEmployees();
+        return employeeNames;
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+  },
+  {
+    type: "list",
+    message: "Please select the role of the selected employee: ",
+    name: "employeeRole",
+    choices: async function () {
+      try {
+        const roleTitles = await query.getRoles();
+        return roleTitles;
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+  },
+  {
+    type: "list",
+    message: "Please select the employee's new Manager': ",
+    name: "manager",
+    choices: async function () {
+      try {
+        const employeeNames = await query.getEmployees();
+        return employeeNames;
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+  },
+  {
+    type: "list",
+    message: "Please select the role of the selected manager: ",
+    name: "managerRole",
+    choices: async function () {
+      try {
+        const roleTitles = await query.getRoles();
+        return roleTitles;
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+  },
+];
+
 /*Prompts the user with a list of actions they can take related to departments, roles, and employees and waits for 
 the user to make a selection. Based on the user's selection,the appropriate corresponding function will execute. 
 displayPrompts() calls itself recursively to continue prompting the user with the menu prompt until the "Quit" 
@@ -245,6 +433,39 @@ function displayPrompts() {
         case "View All Employees":
           const employeeList = await query.viewAllEmployees();
           console.table(employeeList);
+          break;
+        case "View Employees by Manager":
+          await inquirer
+            .prompt(viewEmployeebyManagerPrompt)
+            .then(async (userManager) => {
+              const managerEmployees = await query.viewEmployeeByManager(
+                userManager.manager
+              );
+              console.table(managerEmployees);
+            })
+            .catch((err) => console.log(err));
+          break;
+        case "View Employees by Department":
+          await inquirer
+            .prompt(viewEmployeebyDepartmentPrompt)
+            .then(async (userDepartment) => {
+              const departmentEmployees = await query.viewEmployeeByDepartment(
+                userDepartment.department
+              );
+              console.table(departmentEmployees);
+            })
+            .catch((err) => console.log(err));
+          break;
+        case "View a Department's Budget":
+          await inquirer
+            .prompt(viewDepartmentBudgetPrompt)
+            .then(async (userDepartment) => {
+              const departmentBudget = await query.viewDepartmentBudget(
+                userDepartment.department
+              );
+              console.table(departmentBudget);
+            })
+            .catch((err) => console.log(err));
           break;
         // Case statements for adding a department, role, or employee are used to prompt the user for input and
         // add the new data to the database
@@ -300,14 +521,51 @@ function displayPrompts() {
                   `\nNew Employee, ${userEmployee.employeeFName} ${userEmployee.employeeLName}, added to the employee database\n`
                 );
               }
-            });
+            })
+            .catch((err) => console.log(err));
+          break;
+        // Case statements for remove a department, role, or employee are used to prompt the user for input and
+        // remove the new data from the database
+        case "Remove a Department":
+          const removedDepartment = await inquirer
+            .prompt(removeDepartmentPrompt)
+            .then(async (userDepartment) => {
+              await query.removeDepartment(userDepartment.department);
+              console.log(
+                `\n${userDepartment.department} Department removed from database\n`
+              );
+            })
+            .catch((err) => console.log(err));
+          break;
+        case "Remove a Role":
+          const removedRole = await inquirer
+            .prompt(removeRolePrompt)
+            .then(async (userRole) => {
+              await query.removeRole(userRole.role);
+              console.log(`\n${userRole.role} Role removed from database\n`);
+            })
+            .catch((err) => console.log(err));
+          break;
+        case "Remove an Employee":
+          const removedEmployee = await inquirer
+            .prompt(removeEmployeePrompt)
+            .then(async (userEmployee) => {
+              await query.removeEmployee(
+                userEmployee.employee,
+                userEmployee.role
+              );
+              console.log(
+                `\n${userEmployee.employee}: Employee removed from database\n`
+              );
+            })
+            .catch((err) => console.log(err));
           break;
         // Case statement for updating an employee role is used to prompt the user for input and update the database
         case "Update an Employee Role":
           await inquirer
             .prompt(updateEmployeePrompt)
             .then(async (userUpdate) => {
-              // conditional statement is used to update a role to a manager role (their manager_id is set to null) if 
+              // conditional statement is used to update a role to a manager role (their manager_id is set to null) if
               // the user selects "none" as the manager
               if (userUpdate.updateManager === "none") {
                 await query.updateRoletoManager(
@@ -328,7 +586,25 @@ function displayPrompts() {
                   `\nDatabase Update: Employee, ${userUpdate.updateEmployee}, has been given the new job title: ${userUpdate.updateRole}\n`
                 );
               }
-            });
+            })
+            .catch((err) => console.log(err));
+          break;
+        // Case statement for updating an employee's manager is used to prompt the user for input and update the database
+        case "Update an Employee's Manager":
+          const newEmployeeManager = await inquirer
+            .prompt(updateEmployeesManagerPrompt)
+            .then(async (userUpdate) => {
+              await query.updateEmployeesManager(
+                userUpdate.employee,
+                userUpdate.employeeRole,
+                userUpdate.manager,
+                userUpdate.managerRole
+              );
+              console.log(
+                `\nDatabase Update: Employee, ${userUpdate.employee}, has been given the new manager: ${userUpdate.manager}\n`
+              );
+            })
+            .catch((err) => console.log(err));
           break;
         // Default case to exit the application which occurs when the user chooses the "Quit" option in the menu prompt
         default:
